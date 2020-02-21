@@ -13,20 +13,23 @@ article_body =  soup.select_one('.article-body')
 all_p = article_body.find_all('p')
 exercises = []
 previous_week = ""
-date = pendulum.datetime(2020, 1, 27) #27.01.0219
+date = pendulum.datetime(2020, 1, 26) #27.01.0219
 for p in all_p:
+    day = ""
     week = p.find_previous_sibling('h2')
     span = p.select_one('span')
-    if span is None:
-        continue
-    p.span.decompose()
+    if span is not None:
+        p.span.extract()
+        day = span.select_one('strong').text
+        date = date.add(days=1)
     if week is not None:
         if week != previous_week:
-            exercises.append([week.text,date.format('dddd'), p.text,date.format('YYYY-MM-DD')])
+            exercises.append([week.text,day, p.text,date.format('YYYY-MM-DD')])
             previous_week = week
         else:
-            exercises.append(["",date.format('dddd'), p.text,date.format('YYYY-MM-DD')])
-    date = date.add(days=1)
+            exercises.append(["",day, p.text,date.format('YYYY-MM-DD')])
+    
+    print("~!~!~!")
 
 c = Calendar()
 # Create a workbook and add a worksheet.
